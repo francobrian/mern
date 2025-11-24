@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Container,
   Grid,
@@ -27,11 +27,8 @@ const Marketplace = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
-  useEffect(() => {
-    fetchProducts();
-  }, [page, category]);
-
-  const fetchProducts = async () => {
+  // useCallback to memoize the fetchProducts function
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -56,7 +53,11 @@ const Marketplace = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, category, searchTerm]); // Include all dependencies used in the function
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]); // Now fetchProducts is properly included as a dependency
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -88,6 +89,10 @@ const Marketplace = () => {
   const handlePageChange = (event, value) => {
     setPage(value);
     window.scrollTo(0, 0);
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
   };
 
   return (
@@ -185,7 +190,7 @@ const Marketplace = () => {
       <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        onClose={handleCloseSnackbar}
         message={snackbar.message}
       />
     </Container>
