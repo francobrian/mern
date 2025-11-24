@@ -11,11 +11,15 @@
   ],
   "routes": [
     {
+      "src": "/static/(.*)",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      },
+      "dest": "/static/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ],
-  "env": {
-    "REACT_APP_API_URL": "https://mkulimaconnect-3.onrender.com"
-  }
+  ]
 }
